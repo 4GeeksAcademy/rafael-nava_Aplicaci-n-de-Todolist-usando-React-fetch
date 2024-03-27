@@ -10,3 +10,10 @@
     import 'relative/path/to/stylesheet.scss';
 
 */
+
+button, input, optgroup, select, textarea {
+    margin: 2px;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
