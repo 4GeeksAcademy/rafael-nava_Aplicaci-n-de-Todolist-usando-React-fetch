@@ -10,7 +10,7 @@ function TodoList() {
   const crearUser = async () => {
     try {
       let response = await fetch(
-        `https://playground.4geeks.com/apis/fake/todos/user/${userName}`,
+        `https://playground.4geeks.com/contact/agendas/${userName}`,
         {
           method: "POST",
           body: JSON.stringify([]),
@@ -39,62 +39,68 @@ function TodoList() {
     const fetchTodoList = async () => {
       try {
         if (userName) {
-          // Verificar si userName tiene un valor asignado si tienen un valor reproduce el resto del codigo
           let response = await fetch(
-            `https://playground.4geeks.com/apis/fake/todos/user/${userName}`,
+            `https://playground.4geeks.com/contact/agendas/${userName}/contacts`,
             {
               method: "GET",
               headers: { "Content-Type": "application/json" },
             }
           );
           if (!response.ok) {
-            throw new Error(
-              `No se pudieron recuperar los datos: ${response.statusText}`
-            );
+            throw new Error(`Failed to fetch data: ${response.statusText}`);
           }
           let data = await response.json();
-          setTodoList(data);
+          // Revisa la estructura de 'data' para entender cómo manejarla
+          console.log(data);
+          // Actualiza el estado basado en la estructura de 'data'
+          setTodoList(data); // Supongamos que 'data' es un array directo de tareas
         }
       } catch (error) {
         console.error(error.message);
       }
     };
-
+  
     fetchTodoList();
   }, [userName]); // Ejecutar el efecto cada vez que userName cambie
 
   // evento del inputTask
   const valueInput = (e) => {
     setInput(e.target.value);
-    console.log(input);
+    // console.log(input);
   };
 
-  //hacemos un metodo PUT para agregar todas las tareas a la api
+  //hacemos un metodo POST para agregar todas las tareas a la api
   const addInput = async () => {
-    let newInput = { label: input, done: false };
+    let newInput = { name: input, phone: "", email: "", address: "" };
     try {
       let response = await fetch(
-        `https://playground.4geeks.com/apis/fake/todos/user/${userName}`,
+        `https://playground.4geeks.com/contact/agendas/${userName}/contacts`,
         {
-          method: "PUT",
-          body: JSON.stringify([...todoList, newInput]),
+          method: "POST",
+          body: JSON.stringify(newInput),
           headers: { "Content-Type": "application/json" },
         }
       );
+      if (!response.ok) {
+        throw new Error(`Failed to add task: ${response.statusText}`);
+      }
       let data = await response.json();
       console.log(data);
-      setTodoList([...todoList, newInput]);
+      // Actualización del estado después de que se completa la solicitud
+      setTodoList([...todoList, data]);
+      // console.log(todoList)
       setInput("");
     } catch (error) {
-      console.error(error.message);
+      console.error("Error adding task:", error.message);
     }
   };
+  
 
   //eliminamos el usuario api con todas sus tareas
   const deleteAll = async () => {
     try {
       const response = await fetch(
-        `https://playground.4geeks.com/apis/fake/todos/user/${userName}`,
+        `https://playground.4geeks.com/contact/agendas/${userName}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -157,7 +163,7 @@ function TodoList() {
           {todoList.map((contenido, index) => {
             return (
               <li key={index} className="list-group-item">
-                {contenido.label}
+                {contenido.name}
               </li>
             );
           })}
